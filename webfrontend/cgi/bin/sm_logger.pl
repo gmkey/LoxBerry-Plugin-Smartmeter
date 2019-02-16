@@ -5,9 +5,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -186,6 +186,24 @@ elsif ( $protocol eq "emhehzksml" ) {
 	our $postcommand = "";
 
 	&PROTO_GENERICSML;
+}
+
+elsif ( $protocol eq "iskraMT382" ) {
+
+	### Defaults
+	our $baudrate = 9600 if !$baudrate;
+	our $startbaudrate = 9600 if !$startbaudrate;
+	our $databits = 7 if !$databits;
+	our $stopbits = 1 if !$stopbits;
+	our $parity = "even" if !$parity;
+	our $handshake = "none" if !$handshake;
+	our $timeout = "10" if !$timeout;
+	our $delay = "2" if !$delay;
+	our $preinitcommand = "";
+	our $precommand = "";
+	our $postcommand = "";
+
+	&PROTO_GENERICD0;
 }
 
 elsif ( $protocol eq "iskra173d0" ) {
@@ -475,13 +493,13 @@ sub PROTO_GENERICD0
 
     		### Read serial device
     		&READ_SERIAL();
-    
+
     	} else {
-    
+
     		&LOG ("Parsing previous dump file $parse", "INFO");
-    
+
     	}
-    
+
     	if ( $type eq "HEAT" ) {
 
     		&PARSE_DUMP("D0", "HEAT");
@@ -649,7 +667,7 @@ sub D0_CHANGEBAUDRATE
 			my $precommandlog = $precommand;
 			$precommandlog =~ s/\r\n\z//; # chomp doesn't work here...
   			my $num_out3 = $port->write($precommand);
-	
+
 			### Debug
   			&LOG ("Send: $precommandlog", "INFO");
 			if ( !$num_out3 ) {
@@ -692,7 +710,7 @@ sub D0_CHANGEBAUDRATE
 			my $baudwechsellog = $baudwechsel;
 			$baudwechsellog =~ s/\r\n\z//; # chomp doesn't work here...
   			my $num_out2 = $port->write($baudwechsel);
-	
+
 			### Debug
   			&LOG ("Send: $baudwechsellog", "INFO");
 			if ( !$num_out2 ) {
@@ -914,7 +932,7 @@ sub PARSE_DUMP
 	my $datereadable = "$year-$mon-$mday $hour:$min:$sec";
 
 	# Loxone Epoche Date
-	my $dt = DateTime->new( year   => $year, month  => $mon, day    => $mday, hour   => $hour, minute => $min, 
+	my $dt = DateTime->new( year   => $year, month  => $mon, day    => $mday, hour   => $hour, minute => $min,
 				second => $sec, nanosecond => 500000000, time_zone => 'local' );
 	my $epoch_time = $dt->epoch;
 	my $tz = DateTime::TimeZone->new( name => 'local' );
@@ -1094,4 +1112,3 @@ sub LOG
   	return();
 
 }
-
